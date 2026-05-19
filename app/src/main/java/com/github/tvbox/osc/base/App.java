@@ -77,23 +77,27 @@ public class App extends MultiDexApplication {
         Hawk.put(HawkConfig.DEFAULT_LOAD_LIVE, true);
 
         // Register periodic background workers (survives app restart + device reboot)
-        RefreshWorker.enqueue(this);
-        DiscoveryWorker.enqueue(this);
-        RevalidationWorker.enqueue(this);
+        try {
+            RefreshWorker.enqueue(this);
+            DiscoveryWorker.enqueue(this);
+            RevalidationWorker.enqueue(this);
 
-        // Immediate refresh on startup if data is stale (> 2 hours since last refresh)
-        long lastRefresh = Hawk.get(HawkConfig.LIVE_LAST_REFRESH_TIME, 0L);
-        long twoHoursMs = 2 * 60 * 60 * 1000L;
-        if (System.currentTimeMillis() - lastRefresh > twoHoursMs) {
-            RefreshWorker.enqueueOnce(this);
-            Hawk.put(HawkConfig.LIVE_LAST_REFRESH_TIME, System.currentTimeMillis());
-        }
+            // Immediate refresh on startup if data is stale (> 2 hours since last refresh)
+            long lastRefresh = Hawk.get(HawkConfig.LIVE_LAST_REFRESH_TIME, 0L);
+            long twoHoursMs = 2 * 60 * 60 * 1000L;
+            if (System.currentTimeMillis() - lastRefresh > twoHoursMs) {
+                RefreshWorker.enqueueOnce(this);
+                Hawk.put(HawkConfig.LIVE_LAST_REFRESH_TIME, System.currentTimeMillis());
+            }
 
-        // First launch: run discovery immediately
-        boolean firstDiscovery = Hawk.get(HawkConfig.LIVE_FIRST_DISCOVERY_DONE, false);
-        if (!firstDiscovery) {
-            DiscoveryWorker.enqueueOnce(this);
-            Hawk.put(HawkConfig.LIVE_FIRST_DISCOVERY_DONE, true);
+            // First launch: run discovery immediately
+            boolean firstDiscovery = Hawk.get(HawkConfig.LIVE_FIRST_DISCOVERY_DONE, false);
+            if (!firstDiscovery) {
+                DiscoveryWorker.enqueueOnce(this);
+                Hawk.put(HawkConfig.LIVE_FIRST_DISCOVERY_DONE, true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

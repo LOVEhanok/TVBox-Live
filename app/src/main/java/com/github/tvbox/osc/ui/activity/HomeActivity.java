@@ -117,6 +117,12 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     protected void init() {
+        // Live-only mode: redirect to LivePlayActivity immediately before any VOD UI loads
+        if (Hawk.get(HawkConfig.DEFAULT_LOAD_LIVE, false)) {
+            jumpActivity(LivePlayActivity.class);
+            finish();
+            return;
+        }
         EventBus.getDefault().register(this);
         ControlManager.get().startServer();
         initView();
