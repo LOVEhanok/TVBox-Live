@@ -113,15 +113,15 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.12.11'
     annotationProcessor 'androidx.room:room-compiler:2.3.0'
     implementation 'androidx.room:room-runtime:2.3.0'
-    // Kotlin support for Room
     implementation 'androidx.room:room-ktx:2.3.0'
+    kapt 'androidx.room:room-compiler:2.3.0'
 
     // WorkManager for background tasks
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
 
     // Kotlin Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.7.10'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.squareup.okio:okio:2.8.0'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.45-androidx'
