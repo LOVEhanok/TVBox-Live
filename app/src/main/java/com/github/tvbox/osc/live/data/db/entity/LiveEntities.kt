@@ -9,11 +9,11 @@ data class LiveSourceEntity(
     val url: String,
     val type: String,
     val enabled: Int = 1,
-    val lastFetchedAt: Long = 0,
-    val lastChannelCount: Int = 0,
-    val fetchErrorCount: Int = 0,
+    @ColumnInfo(name = "last_fetched_at") val lastFetchedAt: Long = 0,
+    @ColumnInfo(name = "last_channel_count") val lastChannelCount: Int = 0,
+    @ColumnInfo(name = "fetch_error_count") val fetchErrorCount: Int = 0,
     val etag: String? = null,
-    val lastModified: String? = null
+    @ColumnInfo(name = "last_modified") val lastModified: String? = null
 )
 
 @Entity(

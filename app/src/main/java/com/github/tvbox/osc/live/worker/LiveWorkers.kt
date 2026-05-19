@@ -63,6 +63,7 @@ class RefreshWorker(
         private const val NOTIFICATION_ID = 1001
 
         /** 注册周期性任务（每 6 小时） */
+        @JvmStatic
         fun enqueue(context: Context) {
             val request = PeriodicWorkRequestBuilder<RefreshWorker>(6, TimeUnit.HOURS)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -74,6 +75,7 @@ class RefreshWorker(
         }
 
         /** 立即执行一次刷新（应用启动时调用） */
+        @JvmStatic
         fun enqueueOnce(context: Context) {
             val request = OneTimeWorkRequestBuilder<RefreshWorker>()
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -131,6 +133,7 @@ class DiscoveryWorker(
 
     companion object {
         /** 注册周期性任务（每 24 小时） */
+        @JvmStatic
         fun enqueue(context: Context) {
             val request = PeriodicWorkRequestBuilder<DiscoveryWorker>(24, TimeUnit.HOURS)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -142,6 +145,7 @@ class DiscoveryWorker(
         }
 
         /** 立即执行一次发现（应用启动时调用） */
+        @JvmStatic
         fun enqueueOnce(context: Context) {
             val request = OneTimeWorkRequestBuilder<DiscoveryWorker>()
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -188,6 +192,7 @@ class RevalidationWorker(
     }
 
     companion object {
+        @JvmStatic
         fun enqueue(context: Context) {
             val request = PeriodicWorkRequestBuilder<RevalidationWorker>(2, TimeUnit.HOURS)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())

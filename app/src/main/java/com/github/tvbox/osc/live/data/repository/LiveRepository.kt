@@ -123,6 +123,11 @@ class LiveRepository private constructor(private val context: Context) {
     }
 
     suspend fun recordFailure(url: String, reason: String) = withContext(Dispatchers.IO) {
+        recordFailureSync(url, reason)
+    }
+
+    /** Non-suspend version for Java callers */
+    fun recordFailureSync(url: String, reason: String) {
         val now = System.currentTimeMillis()
         val existing = failedUrlDao.isCurrentlyFailed(url, now)
         val failCount = (existing?.failCount ?: 0) + 1
@@ -259,7 +264,7 @@ class LiveRepository private constructor(private val context: Context) {
             val group = LiveChannelGroup()
             group.groupIndex = groupIndex++
             group.groupName = groupName
-            group.liveChannelItems = ArrayList(channels.mapIndexed { channelIndex, channelWithUrls ->
+            group.setLiveChannels(ArrayList(channels.mapIndexed { channelIndex, channelWithUrls ->
                 val item = LiveChannelItem()
                 item.channelIndex = channelIndex
                 item.channelNum = channelIndex + 1
@@ -272,7 +277,7 @@ class LiveRepository private constructor(private val context: Context) {
                     .map { it.sourceName })
                 item.sourceNum = channelWithUrls.urls.size
                 item
-            })
+            }))
             result.add(group)
         }
 
@@ -325,6 +330,7 @@ class LiveRepository private constructor(private val context: Context) {
         @Volatile
         private var INSTANCE: LiveRepository? = null
 
+        @JvmStatic
         fun getInstance(context: Context): LiveRepository {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: LiveRepository(context.applicationContext).also { INSTANCE = it }

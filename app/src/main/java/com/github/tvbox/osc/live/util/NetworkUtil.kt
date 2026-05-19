@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 object NetworkUtil {
 
-    private val client by lazy {
+    val client: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
@@ -15,8 +15,6 @@ object NetworkUtil {
             .followSslRedirects(true)
             .build()
     }
-
-    fun getClient(): OkHttpClient = client
 
     data class FetchResult(
         val content: String,
@@ -104,8 +102,8 @@ object NetworkUtil {
                 .build()
 
             val clientWithTimeout = client.newBuilder()
-                .connectTimeout(timeoutMs.toInt(), TimeUnit.MILLISECONDS)
-                .readTimeout(timeoutMs.toInt(), TimeUnit.MILLISECONDS)
+                .connectTimeout(timeoutMs, TimeUnit.MILLISECONDS)
+                .readTimeout(timeoutMs, TimeUnit.MILLISECONDS)
                 .build()
 
             val response = clientWithTimeout.newCall(request).execute()

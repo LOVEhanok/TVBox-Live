@@ -1533,7 +1533,7 @@ public class LivePlayActivity extends BaseActivity {
         try {
             new Thread(() -> {
                 try {
-                    LiveRepository.getInstance(App.getInstance()).recordFailure(url, reason);
+                    LiveRepository.getInstance(App.getInstance()).recordFailureSync(url, reason);
                 } catch (Exception e) {
                     // Silent fail - this is best-effort
                 }
