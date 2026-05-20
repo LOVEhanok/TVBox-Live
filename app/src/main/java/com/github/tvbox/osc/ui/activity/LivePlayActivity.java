@@ -219,6 +219,17 @@ public class LivePlayActivity extends BaseActivity {
 
     @Override
     protected void init() {
+        try {
+            initInternal();
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                setDefaultLiveChannelList();
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private void initInternal() {
         context = this;
         epgStringAddress = Hawk.get(HawkConfig.EPG_URL,"");
         if(epgStringAddress == null || epgStringAddress.length()<5)
@@ -246,10 +257,8 @@ public class LivePlayActivity extends BaseActivity {
         tv_curepg_left = (TextView) findViewById(R.id.tv_current_program);//当前节目
         tv_nextepg_left= (TextView) findViewById(R.id.tv_next_program);//下一节目
         ll_epg = (RelativeLayout) findViewById(R.id.ll_epg);
-//        tv_right_top_tipnetspeed = (TextView)findViewById(R.id.tv_right_top_tipnetspeed);
         tv_right_top_channel_name = (TextView)findViewById(R.id.tv_right_top_channel_name);
         tv_right_top_epg_name = (TextView)findViewById(R.id.tv_right_top_epg_name);
-//        tv_right_top_type = (TextView)findViewById(R.id.tv_right_top_type);
         iv_circle_bg = (ImageView) findViewById(R.id.iv_circle_bg);
         iv_back_bg = (ImageView) findViewById(R.id.iv_back_bg);
         tv_shownum = (TextView) findViewById(R.id.tv_shownum);

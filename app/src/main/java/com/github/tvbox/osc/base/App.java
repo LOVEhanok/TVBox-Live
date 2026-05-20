@@ -44,25 +44,45 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        // Global crash logger - writes to /sdcard/tvbox_crash.log
+        Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
+            try {
+                java.io.FileWriter fw = new java.io.FileWriter(new java.io.File(
+                        getExternalFilesDir(null), "crash.log"), true);
+                java.io.PrintWriter pw = new java.io.PrintWriter(fw);
+                pw.println("=== Crash " + new java.util.Date() + " ===");
+                ex.printStackTrace(pw);
+                pw.println();
+                pw.close();
+                fw.close();
+            } catch (Exception ignored) {}
+            // Also log to logcat
+            ex.printStackTrace();
+            System.exit(1);
+        });
         initParams();
         // OKGo
-        OkGoHelper.init(); //台标获取
-        EpgUtil.init();
+        try { OkGoHelper.init(); } catch (Exception e) { e.printStackTrace(); }
+        try { EpgUtil.init(); } catch (Exception e) { e.printStackTrace(); }
         // 初始化Web服务器
-        ControlManager.init(this);
+        try { ControlManager.init(this); } catch (Exception e) { e.printStackTrace(); }
         //初始化数据库
-        AppDataManager.init();
-        LoadSir.beginBuilder()
-                .addCallback(new EmptyCallback())
-                .addCallback(new LoadingCallback())
-                .commit();
-        AutoSizeConfig.getInstance().setCustomFragment(true).getUnitsManager()
-                .setSupportDP(false)
-                .setSupportSP(false)
-                .setSupportSubunits(Subunits.MM);
-        PlayerHelper.init();
-        QuickJSLoader.init();
-        FileUtils.cleanPlayerCache();
+        try { AppDataManager.init(); } catch (Exception e) { e.printStackTrace(); }
+        try {
+            LoadSir.beginBuilder()
+                    .addCallback(new EmptyCallback())
+                    .addCallback(new LoadingCallback())
+                    .commit();
+        } catch (Exception e) { e.printStackTrace(); }
+        try {
+            AutoSizeConfig.getInstance().setCustomFragment(true).getUnitsManager()
+                    .setSupportDP(false)
+                    .setSupportSP(false)
+                    .setSupportSubunits(Subunits.MM);
+        } catch (Exception e) { e.printStackTrace(); }
+        try { PlayerHelper.init(); } catch (Exception e) { e.printStackTrace(); }
+        try { QuickJSLoader.init(); } catch (Exception e) { e.printStackTrace(); }
+        try { FileUtils.cleanPlayerCache(); } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void initParams() {
