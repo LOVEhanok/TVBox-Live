@@ -1002,7 +1002,7 @@ public class LivePlayActivity extends BaseActivity {
 
         channel_Name = currentLiveChannelItem;
         currentLiveLookBackIndex=-1;
-        epgListAdapter.setSelectedEpgIndex(-1);
+        if (epgListAdapter != null) epgListAdapter.setSelectedEpgIndex(-1);
         isSHIYI=false;
         isBack = false;
         if(hasCatchup || currentLiveChannelItem.getUrl().contains("PLTV/") || currentLiveChannelItem.getUrl().contains("TVOD/")){
@@ -1015,9 +1015,18 @@ public class LivePlayActivity extends BaseActivity {
         backcontroller.setVisibility(View.GONE);
         ll_right_top_huikan.setVisibility(View.GONE);
         if(mVideoView!=null){
+            String url = currentLiveChannelItem.getUrl();
+            // Skip playback for invalid/placeholder URLs
+            if (url == null || url.isEmpty() || url.contains("default.play.url")) {
+                return true;
+            }
             if(liveWebHeader()!=null)LOG.i("echo-"+liveWebHeader().toString());
-            mVideoView.setUrl(currentLiveChannelItem.getUrl(),liveWebHeader());
-            mVideoView.start();
+            mVideoView.setUrl(url, liveWebHeader());
+            try {
+                mVideoView.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
