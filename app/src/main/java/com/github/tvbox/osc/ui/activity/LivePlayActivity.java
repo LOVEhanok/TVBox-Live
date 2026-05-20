@@ -2440,23 +2440,19 @@ public class LivePlayActivity extends BaseActivity {
 
     private void loadFromLiveRepository() {
         showLoading();
-        new Thread(() -> {
-            try {
-                List<LiveChannelGroup> groups = LiveRepository.getInstance(App.getInstance()).convertToLegacyGroups();
-                mHandler.post(() -> {
-                    if (groups != null && !groups.isEmpty()) {
-                        liveChannelGroupList.clear();
-                        liveChannelGroupList.addAll(groups);
-                        showSuccess();
-                        initLiveState();
-                    } else {
-                        setDefaultLiveChannelList();
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                mHandler.post(() -> setDefaultLiveChannelList());
+        try {
+            List<LiveChannelGroup> groups = LiveRepository.getInstance(App.getInstance()).convertToLegacyGroups();
+            if (groups != null && !groups.isEmpty()) {
+                liveChannelGroupList.clear();
+                liveChannelGroupList.addAll(groups);
+                showSuccess();
+                initLiveState();
+            } else {
+                setDefaultLiveChannelList();
             }
-        }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            setDefaultLiveChannelList();
+        }
     }
 }
