@@ -255,6 +255,11 @@ class LiveRepository private constructor(private val context: Context) {
         }
     }
 
+    /** Public no-arg version for Java callers: fetches channels from DB then converts */
+    fun convertToLegacyGroups(): List<LiveChannelGroup> {
+        return convertToLegacyGroups(channelDao.getAllWithUrls())
+    }
+
     private fun convertToLegacyGroups(channelsWithUrls: List<LiveChannelWithUrls>): List<LiveChannelGroup> {
         val grouped = channelsWithUrls.groupBy { it.channel.groupName }
         val result = mutableListOf<LiveChannelGroup>()

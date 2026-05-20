@@ -382,8 +382,13 @@ public class LivePlayActivity extends BaseActivity {
         initLiveChannelView();
         initSettingGroupView();
         initSettingItemView();
+        ApiConfig.get().initLiveSettings();
         initLiveChannelList();
-        initLiveSettingGroupList();
+        try {
+            initLiveSettingGroupList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Hawk.put(HawkConfig.PLAYER_IS_LIVE,true);
     }
     //获取EPG并存储 // 百川epg  DIYP epg   51zmt epg ------- 自建EPG格式输出格式请参考 51zmt
@@ -933,6 +938,8 @@ public class LivePlayActivity extends BaseActivity {
     private void initLiveObj(){
         int position=Hawk.get(HawkConfig.LIVE_GROUP_INDEX, 0);
         JsonArray live_groups=Hawk.get(HawkConfig.LIVE_GROUP_LIST,new JsonArray());
+        if (live_groups.size() == 0) return;
+        if (position >= live_groups.size()) position = 0;
         JsonObject livesOBJ = live_groups.get(position).getAsJsonObject();
         String type = livesOBJ.has("type")?livesOBJ.get("type").getAsString():"0";
 
@@ -1844,8 +1851,8 @@ public class LivePlayActivity extends BaseActivity {
 
     private void initLiveChannelList() {
         List<LiveChannelGroup> list = ApiConfig.get().getChannelGroupList();
-        if (list.isEmpty()) {
-            setDefaultLiveChannelList();
+        if (list == null || list.isEmpty()) {
+            loadFromLiveRepository();
             return;
         }
         initLiveObj();
@@ -2429,5 +2436,27 @@ public class LivePlayActivity extends BaseActivity {
         liveChannelGroupList.add(defaultGroup);
         showSuccess();
         initLiveState();
+    }
+
+    private void loadFromLiveRepository() {
+        showLoading();
+        new Thread(() -> {
+            try {
+                List<LiveChannelGroup> groups = LiveRepository.getInstance(App.getInstance()).convertToLegacyGroups();
+                mHandler.post(() -> {
+                    if (groups != null && !groups.isEmpty()) {
+                        liveChannelGroupList.clear();
+                        liveChannelGroupList.addAll(groups);
+                        showSuccess();
+                        initLiveState();
+                    } else {
+                        setDefaultLiveChannelList();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                mHandler.post(() -> setDefaultLiveChannelList());
+            }
+        }).start();
     }
 }
